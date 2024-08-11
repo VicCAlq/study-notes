@@ -344,6 +344,175 @@ for k, v in pairs(t) do print(k, v) end
 -- If performance is of no concern, pairs() (preceded by ordering 
 -- if needed) will always be the safest option.
 ```
+
+#### Table methods
+```lua
+-- Some sample tables
+local simple_table = { "text", 123, "not a number", 45.67}
+local object_table = {
+    name = "Joan",
+    age = 30,
+    height = 1.75,
+    occupation = "Historian"
+}
+local sub_tables = {
+    address = {
+        street = "Void Street",
+        number = 77,
+        complement = "Apt 7"
+    },
+    phones = { 404123456789, 404987654321, 200132465798 },
+    emails = { "lil_joan@past.org", "current_joan@present.org", }
+}
+
+-- Table elements concatenation (for string and number elements only)
+-- (table, separator?, start_index?, end_index?)
+table.concat(simple_table) -- text123not a number45.67
+table.concat(simple_table, " | ") -- text | 123 | not a number | 45.67
+table.concat(simple_table, " | ", 2) -- 123 | not a number | 45.67
+table.concat(simple_table, " | ", 1, 3) -- text | 123 | not a number
+
+-- Element insertion
+-- (table, pos? (defaults to last index), value)
+table.insert(simple_table, "end") -- { "text", 123, "not a number", 45.67, "end"}
+table.insert(simple_table, 3, "middle") -- { "text", 123, "middle", "not a number", 45.67, "end"}
+
+-- Element removal
+-- (table, pos? (defaults to last index), value)
+table.insert(simple_table, 3) -- { "text", 123, "not a number", 45.67, "end"}
+table.insert(simple_table, -1) -- { "text", 123, "not a number", 45.67}
+
+-- Table length
+table.maxn(simple_table) -- 4
+
+-- Table sorting (single type only, sort-in-place)
+local numbers = { 4, 6, 3, 9, 2 }
+table.sort(numbers) -- { 2, 3, 4, 6, 9 }
+```
+#### OOP - Classes and methods
+```lua
+-- Example in Class and object creation
+Cat = {}
+
+function Cat:new(name, age)
+    local t = setmetatable({}, { __index = Cat })
+    -- Constructor
+    t.name, t.age, t.hunger, t.happy, t.energy = name, age, 50, 50, 50
+    return t
+end
+
+function Cat:play(time)
+    self.happy = self.happy + (10 * time)
+    self.hunger = self.hunger + (5 * time)
+    self.energy = self.energy - (15 * time)
+    print("A fine cat is a playful cat!")
+    self:status()
+end
+
+function Cat:eat(food)
+    self.happy = self.happy + (5 * food)
+    self.hunger = self.hunger - (15 * food)
+    self.energy = self.energy + (2 * food)
+    print("A good cat is a fed cat!")
+    self:status()
+end
+
+function Cat:rest(time)
+    self.happy = self.happy - (2 * time)
+    self.hunger = self.hunger + (5 * time)
+    self.energy = self.energy + (10 * time)
+    print("A healthy cat is a well-sleeping cat!")
+    self:status()
+end
+
+function Cat:status()
+    print(string.format("This is how %s feels now", self.name))
+    print("Happiness: "..self.happy)
+    print("Hunger: "..self.hunger)
+    print("Energy: "..self.energy)
+end
+
+local bootsy = Cat:new("Bootsy", 3)
+bootsy:play(3)
+```
+
+#### Metatables
+
+```lua
+-- Metatables are used to change the behaviour of a table
+local my_table = {}
+local my_metatable = {}
+setmetatable(my_table, my_metatable)
+
+-- To get the metatable use
+local mt = getmetatable(my_table)
+
+-- We can control the main table's behaviour using the following properties
+__index -- What happens when we access missing keys. Can be a function or a table
+__newindex -- Controls what happens when setting values to missing keys
+__call -- Allows the table to be called as a function, and defines what happens then
+__(add, sub, mul, div, mod, pow, unm) -- Changes arithmetics behaviour
+__(eq, lt, gt, le, ge) -- Behaviour for equality and relational operations
+__tostring -- How to confert the table to a string
+__concat -- How to concatenate items
+__len -- How to get the length (#)
+```
+
+## Modules
+```lua
+-- Modules are imported from top folder from the pov of the entryfile
+local example = require("src.subfolder.file")
+
+-- Then we can use things from inside this file
+example.do_thing()
+```
+
+## Coroutines
+Coroutines are similar to JS workers or threads in most other languages.
+
+When a coroutine "yields", it returns what it has computed up to that point and suspends its execution. On resuming, the coroutine will continue its execution from that point on until it finishes or until the next "yield".
+```lua
+-- Coroutine creation
+function my_func(param) print(param) end
+-- (function)
+local my_thread = coroutine.create(my_func)
+-- or
+local my_thread = coroutine.create(function(param) print(param) end)
+-- Returns a "thread" object, which can be operated on
+
+-- Starting or resuming a coroutine with given params
+-- (thread, params)
+coroutine.resume(my_thread, "Hi hi")
+-- If the coroutine has yielded (finished), resume will restart it, and the arguments will be the results from the yield.
+-- It'll return "true" + the results on success (either the yielded values or the function custom return)
+-- It'll return "false" + the error message if it errs
+
+-- Getting the currently running coroutine
+coroutine.running()
+
+-- Getting the coroutine status as status strings
+-- (thread)
+coroutine.status(my_thread)
+-- "running": Coroutine is running 
+-- "suspended": Coroutine is suspended in Yield or didn't yet start
+-- "normal": Coroutine is active but not runnint (another coroutine is running) 
+-- "dead": Coroutine has either successfully finished or terminated in err 
+
+-- Yielding a coroutine (suspending execution and returning current values)
+-- Is used inside the coroutine body at the moment of its creation
+-- Any extra argument is passed as extra results to "resume"
+coroutine.yield(...)
+
+-- Another way to create coroutines
+-- (function)
+local wrapped_thread = coroutine.wrap(my_func)
+-- It returns a function that you can call again to resume execution
+wrapped_thread("Hi hi") -- This will resume the coroutine, instead of coroutine.resume(wrapped_thread)
+
+-- coroutine.create gives you more control over the thread.
+-- You can't use the generic functions when you use coroutine.wrap
+```
+
 ## String manipulation
 ```lua
 -- Unlike some languages, in Lua we concatenate strings using '..'
@@ -400,7 +569,7 @@ string.gsub(vehicles, "cycle", "boat") -- "plane, biboat, car, motorboat, triboa
 #### Less common methods
 ```lua
 -- Get bytecode for characters
--- (string, init, end)
+-- (string, init?, end?)
 string.byte(greeting, 1, -1) -- indexes can start from -1 to get last item
 
 -- Get characters from bytecode
@@ -493,48 +662,124 @@ string.gmatch("The date is 29/02/2024", "%d%d%/%d%d%/%d%d%d%d")
 string.gmatch("The date is 29/02/2024", "(%d%d)%/(%d%d)%/(%d%d%d%d)") 
 -- ^ Three individual matches 29, 02, 2024
 ```
-## Table manipulation
+## Math standard library
 ```lua
+-- Most used
+math.abs(-3) -- Absolute: 3
+math.ceil(3.4) -- Round up: 4
+math.floor(3.4) -- Round down: 3
+math.fmod(15.4, 4) -- Division module (remainder): 3.4
+math.huge -- Similar to positive infinity
+math.max(4, 5, 8, 2, 3) -- Returns max: 8
+math.min(4, 5, 8, 2, 3) -- Returns min: 2
+math.modf(3.4) -- Returns integral and fractional parts of x: 3, 0.4
+math.pi -- Self-explanatory
+math.pow(x, y) -- Same as x^y
+math.random(x?, y?) -- Pseudo random from 0 to 1, or from range between x and y
+math.sqrt(x) -- Square root of x. Same as x^0.5
 
+-- Trigonometry
+math.acos(x) -- Arc cosine in radians
+math.asin(x) -- Arc sine in radians
+math.atan(x) -- Arc tangent in radians
+math.atan2(x, y) -- Arc tangent of y / x in radians to find quadrant.
+math.cos(x) -- Cosine, assumes number is in radians
+math.cosh(x) -- Hyperbolic Cosine, assumes number is in radians
+math.deg(x) -- Angle in degrees from number in radians
+math.rag(x) -- Returns the angle x in radians
+math.sin(x) -- Sine of x (x being in radians)
+math.sinh(x) -- Hyperbolic sine of x (again, x in radians) 
+math.tan(x) -- Tangent of x (also in radians) 
+math.tanh(x) -- Hyperbolic tangent of x (in radians)
+
+-- Others
+math.exp(x) -- Returns e^x
+math.frexp(x) -- Returns m and e such that x = m2^e. e is an int,and m ranges from 0.5 to 1
+math.ldexp(m, 3) -- Returns m2^e
+math.log(x) -- Natural logarithm of x
+math.log10(x) -- Base 10 logarithm of x
+math.randomseed(x) -- Sets x as the seed from the pseudo-random generator
 ```
 
+## IO and files library
 ```lua
+-- Common IO returns:
+-- Success = expected value
+-- Fail =  nil, lua err, system-dependent err
 
+-- opening a file
+local file = io.open("./rust-notes.md", "r+")
+-- File modes:
+-- r: read (default)
+-- w: write
+-- a: append
+-- r: read (default)
+-- w: write
+-- a: append
+-- Mode + "b" = opens in binary mode for some systems e.g. "r+b"
+
+file:close() -- Closes the file.
+io.close(file --[[?]]) -- Same as above. Without a file, closes the default output
+
+io.input(file --[[?]]) -- Without a filename, returns current defalt input file. With a file it opens it in textmode and sets it as the default input file. 
+io.read(...) -- Same as io.input():read(). It reads input (usually CLI) and returns it to the program
+file:read(...) -- Receives a mode denoting how to read the file:
+-- "*n": Reads and returns a number
+-- "*a": Reads whole file from current position. Returns "" on eof
+-- "*l": Default mode. Reads next line from current position. Ignores eol. Returns "" on eof
+-- any number: Reads this number of characters, returning nil on eof
+
+file:lines() -- Returns an iterator, used like "for line in file:lines() do ... end"
+io.lines(file --[[?]]) -- Same as above. Without a filename works like "io.input():lines()"
+
+file:write(...) -- Writes the arguments to the file.
+
+file:flush() -- Saves written data to file
+io.flush() -- Same as above, but for the default output file
+
+io.output(file --[[?]]) -- Similar to io.input, but operates on the default output file. 
+io.write(...) -- Same as io.output():write()
+
+file:seek(param?) -- Gets current file position. "set" puts position at start, "cur" is current, "end" puts at eof
+
+io.popen(prog, mode --[[?]]) -- Starts prog in another process and returns a file handle representing it. This is system-dependent
+
+io.tmpfile() -- Returns handle for a temporary file, in update mode 
+
+io.type(obj) -- Checks if obj is a valid file handle
+```
+## OS library
+```lua
+os.clock() -- Aprox. time in seconds used by the program
+
+-- (format?: string, time?: int, unix time)
+os.date() -- By default, returns current time (www dd MMM yyyy hh:mm:ss tz)
+os.date("!*t") -- Gets a table containing the current time.
+
+os.time() -- Gets current time in unixcode
+os.time(table) -- Gets the unixtime for table passed following the format in os.date, with hour, min and sec being required.
+
+os.difftime(t2, t1) -- Difference between two unix times (t2 - t1)
+
+os.execute(command) -- Runs shell command
+
+os.exit(code?) -- Calls the C function "exit"
+
+os.getenv(name) -- Gets the value of the environment variable passed in "name"
+
+os.remove(name) -- Removes the file/directory. Directories must be empty to be removed.
+
+os.rename(oldname, newname) -- Self-explanatory
+
+os.setlocale(locale, category?) -- Sets current program locale. Category describes which category to change from "all" (default), "collate", "ctype", "monetary", "numeric" or "time"
+
+os.tmpname() -- Returns a string with an available name for a tempfile. Does not automatically open this file nor closes it.
+```
+## Debug library
+```lua
+-- Lets do this later...
 ```
 
-```lua
+# The end
 
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
-```lua
-
-```
-
+This marks the end of these notes for now. I tried to summarize the contents from the manual in a format that can be referenced faster and with some examples on more complicated functionalities. If there's anything missing (apart from the debug library, I'm not touching that for now) feel free to let me know.
