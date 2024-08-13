@@ -4,7 +4,7 @@ These are some quick notes about Lua's syntax and functionalities.
 ## Table of Contents
 - [Lua Notes](#lua-notes)
   - [Table of Contents](#table-of-contents)
-  - [Variables](#variables)
+  - [Variables basics](#variables-basics)
   - [Comments](#comments)
     - [Docstring format](#docstring-format)
   - [Data types](#data-types)
@@ -34,7 +34,7 @@ These are some quick notes about Lua's syntax and functionalities.
     - [Variables](#variables)
     - [Methods](#methods)
       - [Basics](#basics)
-      - [Tables](#tables)
+      - [Table interactions](#table-interactions)
       - [Error handling and debugging](#error-handling-and-debugging)
       - [Low level](#low-level)
   - [String manipulation](#string-manipulation)
@@ -52,7 +52,7 @@ These are some quick notes about Lua's syntax and functionalities.
   - [Debug library](#debug-library)
 - [The end](#the-end)
 
-## Variables
+## Variables basics
 
 ```lua
 -- Global variable
@@ -600,7 +600,7 @@ tostring(param)
 type(arg)
 -- Returns a string with the name of the type for the argument
 ```
-###### Tables
+###### Table interactions
 ```lua
 -- (table)
 ipairs(my_table)
