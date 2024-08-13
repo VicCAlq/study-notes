@@ -30,6 +30,13 @@ These are some quick notes about Lua's syntax and functionalities.
     - [Metatables](#metatables)
   - [Modules](#modules)
   - [Coroutines](#coroutines)
+  - [General methods](#general-methods)
+    - [Variables](#variables)
+    - [Methods](#methods)
+      - [Basics](#basics)
+      - [Tables](#tables)
+      - [Error handling and debugging](#error-handling-and-debugging)
+      - [Low level](#low-level)
   - [String manipulation](#string-manipulation)
     - [Basic methods](#basic-methods)
     - [Pattern matching methods](#pattern-matching-methods)
@@ -557,6 +564,127 @@ wrapped_thread("Hi hi") -- This will resume the coroutine, instead of coroutine.
 
 -- coroutine.create gives you more control over the thread.
 -- You can't use the generic functions when you use coroutine.wrap
+```
+
+## General methods
+
+Below are some methods and variables available at the top level.
+
+#### Variables
+```lua
+arg -- Global table that can receive arguments for a lua script
+-- e.g. lua init.lua "my_argument"
+
+_G -- Global object containing the whole environment (And self-references: _G._G == _G)
+-- This object cannot be changed, but can be used to import stuff
+local error =  _G.error
+
+_VERSION
+-- Holds the current interpreter version. e.g. "Lua 5.1"
+```
+#### Methods
+###### Basics
+```lua
+print(...args)
+-- Prints the arguments to standard output, internally using tostring() to first convert them.
+-- It doesn't auto format things. use string.format() for that
+
+tonumber("10", 8)
+-- Converts the first argument to a number, using the second as the base (2 to 36)
+-- In base 10, it accepts floats, exponents and negatives
+-- In any other base only accepts positive integers
+
+tostring(param)
+-- Converts the argument to a string. Use string.format() to control how numbers are converted
+
+type(arg)
+-- Returns a string with the name of the type for the argument
+```
+###### Tables
+```lua
+-- (table)
+ipairs(my_table)
+-- Returs an iterator, the table and an index
+-- Used to iterate over index - value
+-- (table)
+
+-- (table)
+pairs(my_table)
+-- Returs the `next` function, the table and nil
+-- Used to iterate over key - value
+
+-- (object)
+getmetatable(my_table)
+-- Returns the metatable if present, else it returns nil
+
+next(my_table, idx)
+-- Accesses the next index and value of the table
+
+local a, b, c, d, e = unpack(my_table, 1, 5)
+-- Returns the table items as individual returns. Used to destructure an object
+
+```
+###### Error handling and debugging
+```lua
+-- Result assertion (like .expect() in Jest)
+-- (value_to_test, error_message?: string)
+assert(1+1 == 2, "This is wrong, kiddo")
+-- If you don't give it an error message, it defaults to "assertion error"
+
+-- (message: string, level?: int)
+error("sample error", 1)
+-- Terminates the function and returns the error message.
+-- level 1: default, where the function whas called
+-- level 2: parent of level 1
+-- 0: no level is returned
+
+-- (function?)
+getfenv()
+-- Returns a table containing the environment in use by the function, or the global environment
+
+setfenv(func, my_table)
+-- Sets the environment used by the given function. If function is 0 it sets the environment of the running thread
+
+-- (function, ...args?: arguments)
+pcall(print, "hi")
+-- Calls the function in protected mode. The first return is a boolean
+-- indicating success or failure.
+-- In case of failure, the second return is the error message
+-- In case of success, every other return are the results of that function
+
+xpcall(print, function handle_my_error(err) print(err) end)
+-- Similar to pcall, except you can have a custom error handler
+
+rawequal(value1, value2)
+-- Value checking which ignores any metamethod
+
+rawget(my_table, index)
+-- Gets table[index] ignoring metamethods
+
+rawset(my_table, index, value)
+-- Sets value to table[index] ignoring any metamethods
+```
+###### Low level
+```lua
+-- Manipulates the garbage  collector directly
+-- (option?: string, arg?: string)
+collectgarbage("step", 100)
+-- It has the following options:
+-- collect: Default. Runs a full garbage collection cycle
+-- stop: Stops the collector
+-- restart: Restarts the collector 
+-- count: Returns the total used memory by Lua in Kbytes 
+-- step, arg: Performs a collection step, with "step" size being controlled by the arg param. Returns true after finishing a cycle.
+-- setpause, arg: Sets a new pause for the collector and returns the previous one.
+-- setstepmul: Sets value for step multiplier of the collector, and returns previous value 
+
+dofile("/path/to/file")
+-- Opens and runs file as a lua chunk. If filename is empty it refers to standard input. Returns values executed by the lua chunk, of propagates the error
+
+load(func, "chunkname")
+loadfile("filename")
+loadstring(str, "chunkname")
+-- Functions for loading chunks from functions, files and strings
 ```
 
 ## String manipulation
