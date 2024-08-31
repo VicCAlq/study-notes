@@ -520,6 +520,20 @@ local example = require("src.subfolder.file")
 example.do_thing()
 ```
 
+#### Installing/removing modules
+
+Using Luarocks:
+```bash
+# Installing globally (not beest practice)
+sudo luarocks install the_module
+
+# Installing locally
+luarocks install --local the_module
+
+# Installing per-project inside a subfolder called lua_modules
+luarocks install --tree ./lua_modules the_module
+```
+
 ## Coroutines
 Coroutines are similar to JS workers or threads in most other languages.
 
