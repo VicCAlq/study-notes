@@ -524,7 +524,7 @@ example.do_thing()
 
 Using Luarocks:
 ```bash
-# Installing globally (not beest practice)
+# Installing globally (not best practice)
 sudo luarocks install the_module
 
 # Installing locally
