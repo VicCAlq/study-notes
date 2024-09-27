@@ -1,7 +1,9 @@
 # Lua Notes
+
 These are some quick notes about Lua's syntax and functionalities.
 
 ## Table of Contents
+
 - [Lua Notes](#lua-notes)
   - [Table of Contents](#table-of-contents)
   - [Variables basics](#variables-basics)
@@ -68,31 +70,35 @@ local _, result = pcall(foo)
 ```
 
 ## Comments
+
 ```lua
 -- Common comment
 ---Docstring
 --[[ Multiline comment or in-line block comment]]
 --[=[ Multiline comment that contains "]]"]=]
 ```
+
 #### Docstring format
+
 ```lua
 ---Example of a docstring
 ---@param my_param bool A common required param
 ---@param my_optional? number An optional param
 ---@param my_optional string|nil A param that can be either string or nil
 ---@return table<bool> internal_var The return type
-local function example(my_param, my_optional, my_nullable) 
+local function example(my_param, my_optional, my_nullable)
     ---@type table<any>
     local internal_var = {}
 
     ---@type boolean
     internal_var["result"] = true
 
-    return internal_var 
+    return internal_var
 end
 ```
 
 ## Data types
+
 ```lua
 local a = nil -- Nil / Null
 local b, c = true, false -- Boolean
@@ -109,7 +115,9 @@ local k = userdata --custom C data type
 ```
 
 ## Operators
-####  Arithmetic
+
+#### Arithmetic
+
 ```lua
 local add = 4 + 5
 local subtract = 2 - 5
@@ -119,7 +127,9 @@ local int_divide = 5 // 2
 local remainder = 5 % 2
 local exponent = 5^2
 ```
+
 #### Logical and Relational
+
 ```lua
 local logic_operators = {"not", "and", "or"}
 
@@ -131,7 +141,9 @@ local smaller_or_equal = a <= b
 local larger_or_equal = a >= b
 
 ```
+
 #### Bitwise and others
+
 ```lua
 -- Bitwise
 local AND = x & y -- Lua 5.3+
@@ -151,7 +163,9 @@ RSHIFT = bit32.rshift(x, y) -- Lua 5.2-
 local concat = "one" .. "two" -- "onetwo"
 local length = #concat -- 6
 ```
+
 ## Control structures
+
 #### If-Else
 
 ```lua
@@ -163,7 +177,9 @@ else
     print(a)
 end
 ```
+
 #### Whiles
+
 ```lua
 -- While
 while a < 10 do
@@ -175,7 +191,9 @@ repeat
     a = a - 1
 until a == 0
 ```
+
 #### For loops
+
 ```lua
 -- For (numeric range)
 -- index_variable=start, end, step
@@ -251,6 +269,7 @@ Test2 = range_between(30, 10, -3)
 for _, v in pairs(Test1) do io.write(string.format("%d, ", v)) end
 for _, v in pairs(Test2) do io.write(string.format("%d, ", v)) end
 ```
+
 #### Variadic Functions (unknown param quantity)
 
 ```lua
@@ -265,7 +284,9 @@ function accumulate_numbers(...)
     return sum
 end
 ```
+
 #### Multiple Returns
+
 ```lua
 ---Example of a string splitting function
 ---@param string_to_split string String to split
@@ -285,7 +306,9 @@ function split_string(string_to_split)
     return strings_list, word_num
 end
 ```
+
 #### Closures
+
 ```lua
 -- Functions have closures, so they can access values
 -- in the scope directly above them
@@ -297,7 +320,9 @@ function outerFunc()
     end
 end
 ```
+
 #### Function calls
+
 ```lua
 print("Hello")
 print"Hello"
@@ -308,9 +333,13 @@ f{a = true, b = false}
 
 -- Using parenthesis is always recommended
 ```
+
 ## Tables
+
 There are no arrays, no lists, no dictionaries, no objects. Only tables.
+
 #### Creation and access
+
 ```lua
 -- An empty table
 local t0 = {}
@@ -333,7 +362,9 @@ t3.name -- "Juan"
 t3["age"] -- 62
 t3.age -- also 62
 ```
+
 #### Objects and methods
+
 ```lua
 -- Tables can also behave like objects, mixing data and methods
 local caramel = {
@@ -355,7 +386,9 @@ caramel:jump(place)
 function caramel.clean(self, part) end
 function caramel:lick(part) end
 ```
+
 #### Reading a table
+
 ```lua
 -- Replicating the information in the "For" section, since that's how it's done
 
@@ -394,11 +427,12 @@ for k, v in pairs(t) do print(k, v) end
 -- So for safety, only use pairs() if we want to get
 -- the real table size. Using #table will behave like checking
 -- table size with ipairs().
--- If performance is of no concern, pairs() (preceded by ordering 
+-- If performance is of no concern, pairs() (preceded by ordering
 -- if needed) will always be the safest option.
 ```
 
 #### Table methods
+
 ```lua
 -- Some sample tables
 local simple_table = { "text", 123, "not a number", 45.67}
@@ -442,7 +476,9 @@ table.maxn(simple_table) -- 4
 local numbers = { 4, 6, 3, 9, 2 }
 table.sort(numbers) -- { 2, 3, 4, 6, 9 }
 ```
+
 #### OOP - Classes and methods
+
 ```lua
 -- Example in Class and object creation
 Cat = {}
@@ -512,6 +548,7 @@ __len -- How to get the length (#)
 ```
 
 ## Modules
+
 ```lua
 -- Modules are imported from top folder from the pov of the entryfile
 local example = require("src.subfolder.file")
@@ -523,6 +560,7 @@ example.do_thing()
 #### Installing/removing modules
 
 Using Luarocks:
+
 ```bash
 # Installing globally (not best practice)
 sudo luarocks install the_module
@@ -535,9 +573,11 @@ luarocks install --tree ./lua_modules the_module
 ```
 
 ## Coroutines
+
 Coroutines are similar to JS workers or threads in most other languages.
 
 When a coroutine "yields", it returns what it has computed up to that point and suspends its execution. On resuming, the coroutine will continue its execution from that point on until it finishes or until the next "yield".
+
 ```lua
 -- Coroutine creation
 function my_func(param) print(param) end
@@ -560,10 +600,10 @@ coroutine.running()
 -- Getting the coroutine status as status strings
 -- (thread)
 coroutine.status(my_thread)
--- "running": Coroutine is running 
+-- "running": Coroutine is running
 -- "suspended": Coroutine is suspended in Yield or didn't yet start
--- "normal": Coroutine is active but not runnint (another coroutine is running) 
--- "dead": Coroutine has either successfully finished or terminated in err 
+-- "normal": Coroutine is active but not runnint (another coroutine is running)
+-- "dead": Coroutine has either successfully finished or terminated in err
 
 -- Yielding a coroutine (suspending execution and returning current values)
 -- Is used inside the coroutine body at the moment of its creation
@@ -585,6 +625,7 @@ wrapped_thread("Hi hi") -- This will resume the coroutine, instead of coroutine.
 Below are some methods and variables available at the top level.
 
 #### Variables
+
 ```lua
 arg -- Global table that can receive arguments for a lua script
 -- e.g. lua init.lua "my_argument"
@@ -596,8 +637,11 @@ local error =  _G.error
 _VERSION
 -- Holds the current interpreter version. e.g. "Lua 5.1"
 ```
+
 #### Methods
+
 ###### Basics
+
 ```lua
 print(...args)
 -- Prints the arguments to standard output, internally using tostring() to first convert them.
@@ -614,7 +658,9 @@ tostring(param)
 type(arg)
 -- Returns a string with the name of the type for the argument
 ```
+
 ###### Table interactions
+
 ```lua
 -- (table)
 ipairs(my_table)
@@ -638,7 +684,9 @@ local a, b, c, d, e = unpack(my_table, 1, 5)
 -- Returns the table items as individual returns. Used to destructure an object
 
 ```
+
 ###### Error handling and debugging
+
 ```lua
 -- Result assertion (like .expect() in Jest)
 -- (value_to_test, error_message?: string)
@@ -677,8 +725,13 @@ rawget(my_table, index)
 
 rawset(my_table, index, value)
 -- Sets value to table[index] ignoring any metamethods
+
+warn("Message")
+-- Displays a warning. Lua 5.4 and above only
 ```
+
 ###### Low level
+
 ```lua
 -- Manipulates the garbage  collector directly
 -- (option?: string, arg?: string)
@@ -686,11 +739,11 @@ collectgarbage("step", 100)
 -- It has the following options:
 -- collect: Default. Runs a full garbage collection cycle
 -- stop: Stops the collector
--- restart: Restarts the collector 
--- count: Returns the total used memory by Lua in Kbytes 
+-- restart: Restarts the collector
+-- count: Returns the total used memory by Lua in Kbytes
 -- step, arg: Performs a collection step, with "step" size being controlled by the arg param. Returns true after finishing a cycle.
 -- setpause, arg: Sets a new pause for the collector and returns the previous one.
--- setstepmul: Sets value for step multiplier of the collector, and returns previous value 
+-- setstepmul: Sets value for step multiplier of the collector, and returns previous value
 
 dofile("/path/to/file")
 -- Opens and runs file as a lua chunk. If filename is empty it refers to standard input. Returns values executed by the lua chunk, of propagates the error
@@ -702,6 +755,7 @@ loadstring(str, "chunkname")
 ```
 
 ## String manipulation
+
 ```lua
 -- Unlike some languages, in Lua we concatenate strings using '..'
 local name = "Grug"
@@ -710,7 +764,9 @@ local greeting = "Hello " .. name .. "!" -- Hello Grug!
 -- Converting a value to a string
 tostring(42)
 ```
+
 #### Basic methods
+
 ```lua
 -- Getting the https://github.com/kndndrj/nvim-dbeelength of a string
 string.len(greeting) -- 11
@@ -723,7 +779,9 @@ string.lower(greeting) -- hello grug!
 string.rep(greeting, 3) -- Hello Grug!Hello Grug!Hello Grug!
 string.reverse(greeting) -- !gurG olleH
 ```
+
 #### Pattern matching methods
+
 ```lua
 -- Getting a section of the string
 -- (string, init, end?)
@@ -739,7 +797,7 @@ string.find(greeting, "et", 1, true)
 
 -- Pattern matching on a string
 -- (string, pattern, init?: int)
-local vehicles = "plane, bicycle, car, motorcycle, tricycle" 
+local vehicles = "plane, bicycle, car, motorcycle, tricycle"
 string.match(vehicles, "(%S+cycle)") -- bicycle
 string.match(vehicles, "(%w+cycle)", 16) -- motorcycle
 
@@ -754,7 +812,9 @@ end
 string.gsub(vehicles, "%w+(cycle)", "boat") -- "plane, boat, car, boat, boat"
 string.gsub(vehicles, "cycle", "boat") -- "plane, biboat, car, motorboat, triboat"
 ```
+
 #### Less common methods
+
 ```lua
 -- Get bytecode for characters
 -- (string, init?, end?)
@@ -774,7 +834,9 @@ loadstring(dumped)("Grug") -- "Hello Grug!"
 ```
 
 #### Patterns
+
 ###### Character classes
+
 ```lua
 "abc" -- Matches the characters "abc" themselves
 "." -- All characters
@@ -801,7 +863,9 @@ loadstring(dumped)("Grug") -- "Hello Grug!"
 "[%a-z]" -- Non-valid, can't combine classes with ranges
 "[^set]" -- Compliment of the set
 ```
+
 ###### Pattern item and anchors
+
 ```lua
 -- In these examples, x is a placeholder
 "%x" -- All character classes can be a pattern item
@@ -816,7 +880,9 @@ loadstring(dumped)("Grug") -- "Hello Grug!"
 "^%x" -- Anchors the match at the beginning of the subject string
 "%x$" -- Anchors the match at the end of the subject string
 ```
+
 ###### Capture groups
+
 ```lua
 -- Capture groups are sub-patterns limited by parentheses
 local serial = "NE-714.agb57c"
@@ -829,7 +895,9 @@ local pattern = "((%a%a)%-(%d%d%d)).(%w+)"
 -- When using string.gsub(), we can reference each capture by the pattern %n, examples:
 string.gsub(serial, pattern, "%4.%3-%2") -- "agb57c.714-NE"
 ```
+
 ###### Examples
+
 ```lua
 -- Possible matches
 local str = "This 1 is a 23 test 4 string, best 56 7 example to 8 bring"
@@ -845,12 +913,14 @@ string.gmatch(str, "%d+") -- Every number
 string.gmatch(str, "[aeiou]") -- Only vowels
 string.gmatch(str, "[c-o]") -- Letters from c to o
 string.gmatch(str, "[^%d]+") -- Any non-digit
-string.gmatch("The date is 29/02/2024", "%d%d%/%d%d%/%d%d%d%d") 
+string.gmatch("The date is 29/02/2024", "%d%d%/%d%d%/%d%d%d%d")
 -- ^ single match 29/02/2024
-string.gmatch("The date is 29/02/2024", "(%d%d)%/(%d%d)%/(%d%d%d%d)") 
+string.gmatch("The date is 29/02/2024", "(%d%d)%/(%d%d)%/(%d%d%d%d)")
 -- ^ Three individual matches 29, 02, 2024
 ```
+
 ## Math standard library
+
 ```lua
 -- Most used
 math.abs(-3) -- Absolute: 3
@@ -876,8 +946,8 @@ math.cosh(x) -- Hyperbolic Cosine, assumes number is in radians
 math.deg(x) -- Angle in degrees from number in radians
 math.rag(x) -- Returns the angle x in radians
 math.sin(x) -- Sine of x (x being in radians)
-math.sinh(x) -- Hyperbolic sine of x (again, x in radians) 
-math.tan(x) -- Tangent of x (also in radians) 
+math.sinh(x) -- Hyperbolic sine of x (again, x in radians)
+math.tan(x) -- Tangent of x (also in radians)
 math.tanh(x) -- Hyperbolic tangent of x (in radians)
 
 -- Others
@@ -890,6 +960,7 @@ math.randomseed(x) -- Sets x as the seed from the pseudo-random generator
 ```
 
 ## IO and files library
+
 ```lua
 -- Common IO returns:
 -- Success = expected value
@@ -909,7 +980,7 @@ local file = io.open("./rust-notes.md", "r+")
 file:close() -- Closes the file.
 io.close(file --[[?]]) -- Same as above. Without a file, closes the default output
 
-io.input(file --[[?]]) -- Without a filename, returns current defalt input file. With a file it opens it in textmode and sets it as the default input file. 
+io.input(file --[[?]]) -- Without a filename, returns current defalt input file. With a file it opens it in textmode and sets it as the default input file.
 io.read(...) -- Same as io.input():read(). It reads input (usually CLI) and returns it to the program
 file:read(...) -- Receives a mode denoting how to read the file:
 -- "*n": Reads and returns a number
@@ -925,18 +996,20 @@ file:write(...) -- Writes the arguments to the file.
 file:flush() -- Saves written data to file
 io.flush() -- Same as above, but for the default output file
 
-io.output(file --[[?]]) -- Similar to io.input, but operates on the default output file. 
+io.output(file --[[?]]) -- Similar to io.input, but operates on the default output file.
 io.write(...) -- Same as io.output():write()
 
 file:seek(param?) -- Gets current file position. "set" puts position at start, "cur" is current, "end" puts at eof
 
 io.popen(prog, mode --[[?]]) -- Starts prog in another process and returns a file handle representing it. This is system-dependent
 
-io.tmpfile() -- Returns handle for a temporary file, in update mode 
+io.tmpfile() -- Returns handle for a temporary file, in update mode
 
 io.type(obj) -- Checks if obj is a valid file handle
 ```
+
 ## OS library
+
 ```lua
 os.clock() -- Aprox. time in seconds used by the program
 
@@ -963,7 +1036,9 @@ os.setlocale(locale, category?) -- Sets current program locale. Category describ
 
 os.tmpname() -- Returns a string with an available name for a tempfile. Does not automatically open this file nor closes it.
 ```
+
 ## Debug library
+
 ```lua
 -- Lets do this later...
 ```
